@@ -9,7 +9,7 @@ const multer = require("multer");
 
 const User = require("./db/User");
 const AddProduct = require("./db/addProduct");
-const useProfile=require('./db/profile')
+const useProfile = require("./db/profile");
 const { emailTemplate } = require("./utils/emailTemplete");
 
 const mailHtml = emailTemplate();
@@ -129,7 +129,7 @@ app.get("/search/:key", verifyToken, async (req, res) => {
   res.send(result);
 });
 
-app.get("/sendmail", async (req, res) => {
+app.post("/sendmail", async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -140,26 +140,25 @@ app.get("/sendmail", async (req, res) => {
 
   const info = await transporter.sendMail({
     from: process.env.AUTH_USER_EMAIL,
-    to: "jdborad7931@gmail.com",
+    to: req.body.email,
     subject: "reset Password link",
     html: mailHtml,
   });
-  res.json(info);
+  res.send(info);
 });
 
-app.post("/profile", uploadFile,async (req, res) => {
-  const { lastName, firstName, email } = req.body
+app.post("/profile", uploadFile, async (req, res) => {
+  const { lastName, firstName, email } = req.body;
   const imageFileName = req.file.filename;
-  let data=new useProfile({
+  let data = new useProfile({
     firstName,
     lastName,
     email,
-    image:imageFileName
-  })
-  let result=await data.save()
-  res.send(result)
+    image: imageFileName,
+  });
+  let result = await data.save();
+  res.send(result);
 });
-
 
 // app.post("/upload", uploadFile, (req, res) => {
 //   res.send("asdas");
