@@ -1,5 +1,4 @@
 const User = require("../user/user.model");
-const useProfile = require("./user.profile");
 const Jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -78,17 +77,18 @@ module.exports.sendMail = async (req, res) => {
 
 module.exports.userProfile = async (req, res) => {
   try {
-    const { lastName, firstName, email } = req.body;
-    const imageFileName = req.file.filename;
-    let data = new useProfile({
-      firstName,
-      lastName,
-      email,
-      image: imageFileName,
+    let user = new User(req.body);
+    let result = await user.save();
+    result = result.toObject();
+    delete result.password;
+    Jwt.sign({ result }, jwtPrivateKey, { expiresIn: "1h" }, (error, token) => {
+      if (token) {
+        res.json({ result, auth: token });
+      } else if (error) {
+        console.log("error in jwt token", error);
+      }
     });
-    let result = await data.save();
-    res.json(result);
   } catch (error) {
-    throw new Error(error);
+    throw Error(error);
   }
 };

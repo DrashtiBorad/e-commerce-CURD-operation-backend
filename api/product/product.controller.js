@@ -64,3 +64,22 @@ module.exports.getSearchData = async (req, res) => {
     throw new Error(error);
   }
 };
+
+module.exports.getCategories = async (req, res) => {
+  try {
+    const result = await AddProduct.distinct("category");
+    res.json(result);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+module.exports.getCategoriesData = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const result = await AddProduct.find({ category: category });
+    res.json(result);
+  } catch (error) {
+    throw new Error(error);
+  }
+};

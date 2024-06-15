@@ -24,4 +24,10 @@ router.put("/updateProduct/:id", verifyToken, productController.updateProduct);
 router.put("/search/:key", verifyToken, productController.getSearchData);
 router.post("/sendmail", userController.sendMail);
 router.post("/profile", verifyToken, UploadFile, userController.userProfile);
+router.get("/categories", verifyToken, productController.getCategories);
+router.get(
+  "/categories/:category",
+  verifyToken,
+  productController.getCategoriesData
+);
 module.exports = router;
