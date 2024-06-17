@@ -9,7 +9,12 @@ const router = require("express").Router();
 router.get("/get-products", verifyToken, productController.getProduct);
 router.post("/register", userController.userRegistration);
 router.post("/login", userController.userLogin);
-router.post("/add-product", verifyToken, productController.addproducts);
+router.post(
+  "/add-product",
+  verifyToken,
+  UploadFile,
+  productController.addproducts
+);
 router.delete(
   "/delete-product/:id",
   verifyToken,

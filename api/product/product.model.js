@@ -1,11 +1,11 @@
 const { default: mongoose } = require("mongoose");
 
 const AddProductSchema = new mongoose.Schema({
+  image: String,
   name: String,
   price: String,
   category: String,
-  userId: String,
+  // userId: String,
   company: String,
-  mobileNo: Number,
 });
 module.exports = mongoose.model("product", AddProductSchema);

@@ -1,9 +1,16 @@
 const AddProduct = require("../product/product.model");
+const path = require("path");
 
 module.exports.getProduct = async (req, res) => {
   try {
-    let user = await AddProduct.find();
-    res.json(user);
+    const { page, size } = req.query;
+    const skip = (page - 1) * size;
+    let Product = await AddProduct.find().skip(skip).limit(size);
+    const productsWithImageUrls = Product.map((product) => ({
+      ...product.toJSON(),
+      image: `http://localhost:5000/uploads/${path.basename(product.image)}`,
+    }));
+    res.json(productsWithImageUrls);
   } catch (error) {
     throw Error(error);
   }
@@ -11,7 +18,9 @@ module.exports.getProduct = async (req, res) => {
 
 module.exports.addproducts = async (req, res) => {
   try {
-    let user = new AddProduct(req.body);
+    const { body, file } = req;
+    const userData = { ...body, image: file.path };
+    let user = new AddProduct(userData);
     let result = await user.save();
     res.send(result);
   } catch (error) {
