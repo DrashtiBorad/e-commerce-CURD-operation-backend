@@ -6,7 +6,11 @@ const userController = require("./user/user.controller");
 
 const router = require("express").Router();
 
-router.get("/get-products", verifyToken, productController.getProduct);
+router.get("/", (req, res) => {
+  return res.status(200).json({ message: "Server is running" });
+});
+
+router.get("/get-products", productController.getProduct);
 router.post("/register", userController.userRegistration);
 router.post("/login", userController.userLogin);
 router.post(
@@ -25,11 +29,16 @@ router.get(
   verifyToken,
   productController.getUpdateProducts
 );
-router.put("/updateProduct/:id", verifyToken, productController.updateProduct);
+router.put(
+  "/updateProduct/:id",
+  UploadFile,
+  verifyToken,
+  productController.updateProduct
+);
 router.put("/search/:key", verifyToken, productController.getSearchData);
 router.post("/sendmail", userController.sendMail);
 router.post("/profile", verifyToken, UploadFile, userController.userProfile);
-router.get("/categories", verifyToken, productController.getCategories);
+router.get("/categories", productController.getCategories);
 router.get(
   "/categories/:category",
   verifyToken,

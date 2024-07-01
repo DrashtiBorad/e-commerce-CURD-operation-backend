@@ -3,14 +3,26 @@ const path = require("path");
 
 module.exports.getProduct = async (req, res) => {
   try {
-    const { page, size } = req.query;
+    const { page, size, userId, sort } = req.query;
+    let apiData = AddProduct.find();
+    if (sort) {
+      switch (sort) {
+        case "AtoZ":
+          apiData = apiData.sort({ category: 1 });
+          break;
+        case "ZtoA":
+          apiData = apiData.sort({ category: -1 });
+          break;
+      }
+    }
     const skip = (page - 1) * size;
-    let Product = await AddProduct.find().skip(skip).limit(size);
+    const totalDocument = await AddProduct.countDocuments();
+    let Product = await apiData.skip(skip).limit(size);
     const productsWithImageUrls = Product.map((product) => ({
       ...product.toJSON(),
       image: `http://localhost:5000/uploads/${path.basename(product.image)}`,
     }));
-    res.json(productsWithImageUrls);
+    res.json({ Products: productsWithImageUrls, Total: totalDocument });
   } catch (error) {
     throw Error(error);
   }
@@ -48,10 +60,17 @@ module.exports.getUpdateProducts = async (req, res) => {
 
 module.exports.updateProduct = async (req, res) => {
   try {
+    const { body, file } = req;
+    const updateProduct = { ...body };
+    if (file) {
+      updateProduct.image = file.path;
+    }
+
     const result = await AddProduct.updateOne(
       { _id: req.params.id },
-      { $set: req.body }
+      { $set: updateProduct }
     );
+
     res.json(result);
   } catch (error) {
     throw new Error(error);
@@ -86,8 +105,17 @@ module.exports.getCategories = async (req, res) => {
 module.exports.getCategoriesData = async (req, res) => {
   try {
     const { category } = req.params;
-    const result = await AddProduct.find({ category: category });
-    res.json(result);
+    const { page, size } = req.query;
+    const skip = (page - 1) * size;
+    const result = await AddProduct.find({ category: category })
+      .skip(skip)
+      .limit(size);
+
+    const productsWithImageUrls = result.map((product) => ({
+      ...product.toJSON(),
+      image: `http://localhost:5000/uploads/${path.basename(product.image)}`,
+    }));
+    res.json(productsWithImageUrls);
   } catch (error) {
     throw new Error(error);
   }

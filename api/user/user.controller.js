@@ -9,17 +9,28 @@ const nodemailer = require("nodemailer");
 
 module.exports.userRegistration = async (req, res) => {
   try {
-    let user = new User(req.body);
-    let result = await user.save();
-    result = result.toObject();
-    delete result.password;
-    Jwt.sign({ result }, jwtPrivateKey, { expiresIn: "1h" }, (error, token) => {
-      if (token) {
-        res.json({ result, auth: token });
-      } else if (error) {
-        console.log("error in jwt token", error);
-      }
-    });
+    const { email } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email is already registered" });
+    } else {
+      let user = new User(req.body);
+      let result = await user.save();
+      result = result.toObject();
+      delete result.password;
+      Jwt.sign(
+        { result },
+        jwtPrivateKey,
+        { expiresIn: "1h" },
+        (error, token) => {
+          if (token) {
+            res.json({ result, auth: token });
+          } else if (error) {
+            console.log("error in jwt token", error);
+          }
+        }
+      );
+    }
   } catch (error) {
     throw Error(error);
   }
