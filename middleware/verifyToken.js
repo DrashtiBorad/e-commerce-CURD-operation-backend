@@ -19,3 +19,18 @@ module.exports.verifyToken = (req, res, next) => {
     res.send({ result: "Please add token with header" });
   }
 };
+module.exports.generateOtp = async (req, res) => {
+  try {
+    const otpCode = Math.floor(100000 + Math.random() * 900000);
+    const message = await client.messages.create({
+      from: process.env.PHONE_NUMBER,
+      to: "+918320471689",
+      body: `${otpCode}`,
+    });
+    const expiresAt = Date.now() + 5 * 60 * 1000;
+    otpStore.set(req.body.email, { otpCode, expiresAt });
+    res.json(message);
+  } catch (error) {
+    throw Error(error);
+  }
+};

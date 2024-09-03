@@ -44,4 +44,8 @@ router.get(
   verifyToken,
   productController.getCategoriesData
 );
+router.post("/generate-otp", userController.generateOtp);
+router.post("/verify-otp", userController.verifyOtp);
+router.post("/resetPassword", userController.resetPassword);
+
 module.exports = router;
