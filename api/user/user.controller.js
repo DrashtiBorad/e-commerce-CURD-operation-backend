@@ -57,10 +57,12 @@ module.exports.userLogin = async (req, res) => {
           }
         );
       } else {
-        res.send("user is not found");
+        res
+          .status(400)
+          .json({ error: "Please Enter valid Email and password" });
       }
     } else {
-      res.send("user is not found");
+      res.status(400).json({ error: "User not found" });
     }
   } catch (error) {
     throw Error(error);
