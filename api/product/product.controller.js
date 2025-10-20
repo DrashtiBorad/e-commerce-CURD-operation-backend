@@ -32,11 +32,12 @@ module.exports.addproducts = async (req, res) => {
   try {
     const { body, file } = req;
     const userData = { ...body, image: file.path };
+    console.log(body, "userData");
     let user = new AddProduct(userData);
     let result = await user.save();
     res.send(result);
   } catch (error) {
-    throw new Error(err);
+    throw new Error(error);
   }
 };
 
